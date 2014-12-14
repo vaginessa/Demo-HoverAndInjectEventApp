@@ -10,6 +10,7 @@ echo Pushing new file
 
 echo Running the class in the apk
 %ANDROID%\platform-tools\adb.exe shell mkdir /data/local/tmp/dalvik-cache
-%ANDROID%\platform-tools\adb.exe shell ANDROID_DATA=/data/local/tmp dalvikvm -cp /data/local/tmp/InjectionService.apk com.example.injectionservice.InnowavesServer
+%ANDROID%\platform-tools\adb.exe shell export ANDROID_DATA=/data/local/tmp
+%ANDROID%\platform-tools\adb.exe shell dalvikvm -cp /data/local/tmp/InjectionService.apk com.example.injectionservice.InnowavesServer &
 
 Pause:
