@@ -1,0 +1,20 @@
+export ANDROID=/data/local/tmp
+cd /data/local/tmp/
+dalvikvm -cp InjectionService.apk com.example.injectionservice.InjectionService
+
+
+adb push InjectionService.apk /data/local/tmp/
+
+adb shell rm -r /data/local/tmp/InjectionService.apk
+
+
+
+adb shell rm -r /data/local/tmp/dalvik-cache/data@local@tmp@InjectionService.apk@classes.dex
+
+
+d2j-dex2jar C:\Users\Abdalla\Desktop\injectionserver\server.dex
+
+
+C:\abdalla\Programs\Programming\Android\android-sdks\build-tools\21.1.1\dx --dex --output=hello.dex Hello.class
+
+/storage/sdcard0
