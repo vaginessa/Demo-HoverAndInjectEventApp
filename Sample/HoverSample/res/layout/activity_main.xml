@@ -4,19 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <FrameLayout
+        android:id="@+id/vg_motion_field"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="8dp"
+        android:background="@drawable/black_bolder" >
+
+    </FrameLayout>
+
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="left|top"
         android:src="@drawable/ic_launcher" />
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="TextView"
-        android:textSize="50sp" />
 
 </FrameLayout>

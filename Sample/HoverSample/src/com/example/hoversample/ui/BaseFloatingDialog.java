@@ -5,6 +5,7 @@ import wei.mark.standout.constants.StandOutFlags;
 import wei.mark.standout.ui.Window;
 import android.app.Notification;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import com.example.hoversample.R;
 
@@ -12,6 +13,7 @@ public abstract class BaseFloatingDialog extends StandOutWindow
 {
 
 	public static boolean running ; 
+	
 	@Override
 	public String getAppName()
 	{
@@ -24,12 +26,35 @@ public abstract class BaseFloatingDialog extends StandOutWindow
 		return R.drawable.ic_launcher;
 	}
 
+	@Override
+	public StandOutLayoutParams getParams(int id, Window window)
+	{
+		int width = 1000;
+		int height = 500;
+		int left = StandOutLayoutParams.LEFT;
+		int top = StandOutLayoutParams.TOP;
+		return new StandOutLayoutParams(id, width, height, left, top);
+	}
 
 	@Override
 	public boolean onShow(int id, Window window)
 	{
 		running = true ;		
 		return super.onShow(id, window);
+	}
+	
+	@Override
+	public boolean onHide(int id, Window window)
+	{
+		running = false ;
+		return super.onHide(id, window);
+	}
+
+	@Override
+	public boolean stopService(Intent name)
+	{
+		running = false ;
+		return super.stopService(name);
 	}
 	
 	@Override
@@ -41,13 +66,14 @@ public abstract class BaseFloatingDialog extends StandOutWindow
 	
 	// ---------------------------------
 
+	
 	// move the window by dragging the view
 	@Override
 	public int getFlags(int id)
 	{
 		return super.getFlags(id) | StandOutFlags.FLAG_BODY_MOVE_ENABLE
-				| StandOutFlags.FLAG_WINDOW_EDGE_LIMITS_ENABLE
-				| StandOutFlags.FLAG_WINDOW_FOCUSABLE_DISABLE;
+				| StandOutFlags.FLAG_WINDOW_EDGE_LIMITS_ENABLE;
+				//| StandOutFlags.FLAG_WINDOW_FOCUSABLE_DISABLE;
 	}
 
 	public static void show(Context cxt,

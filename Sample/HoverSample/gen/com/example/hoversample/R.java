@@ -1623,13 +1623,14 @@ containing a value of this type.
         public static final int abc_textfield_search_activated_mtrl_alpha=0x7f020030;
         public static final int abc_textfield_search_default_mtrl_alpha=0x7f020031;
         public static final int abc_textfield_search_material=0x7f020032;
-        public static final int border=0x7f020033;
-        public static final int border_focused=0x7f020034;
-        public static final int close=0x7f020035;
-        public static final int corner=0x7f020036;
-        public static final int hide=0x7f020037;
-        public static final int ic_launcher=0x7f020038;
-        public static final int maximize=0x7f020039;
+        public static final int black_bolder=0x7f020033;
+        public static final int border=0x7f020034;
+        public static final int border_focused=0x7f020035;
+        public static final int close=0x7f020036;
+        public static final int corner=0x7f020037;
+        public static final int hide=0x7f020038;
+        public static final int ic_launcher=0x7f020039;
+        public static final int maximize=0x7f02003a;
     }
     public static final class id {
         public static final int FrameLayout1=0x7f0a003f;
@@ -1665,13 +1666,14 @@ containing a value of this type.
         public static final int end=0x7f0a001c;
         public static final int expand_activities_button=0x7f0a0022;
         public static final int expanded_menu=0x7f0a0028;
+        public static final int floatinglayer=0x7f0a004b;
         public static final int hide=0x7f0a0046;
         public static final int home=0x7f0a0000;
         public static final int homeAsUp=0x7f0a000e;
         public static final int icon=0x7f0a0026;
         public static final int ifRoom=0x7f0a0016;
         public static final int image=0x7f0a0023;
-        public static final int imageView1=0x7f0a0040;
+        public static final int imageView1=0x7f0a0041;
         public static final int listMode=0x7f0a000a;
         public static final int list_item=0x7f0a0025;
         public static final int maximize=0x7f0a0047;
@@ -1699,11 +1701,12 @@ containing a value of this type.
         public static final int split_action_bar=0x7f0a0004;
         public static final int submit_area=0x7f0a003c;
         public static final int tabMode=0x7f0a000c;
-        public static final int textView1=0x7f0a0041;
+        public static final int textView1=0x7f0a004c;
         public static final int title=0x7f0a0027;
         public static final int titlebar=0x7f0a0044;
         public static final int up=0x7f0a0001;
         public static final int useLogo=0x7f0a0013;
+        public static final int vg_motion_field=0x7f0a0040;
         public static final int window_icon=0x7f0a0045;
         public static final int withText=0x7f0a0018;
         public static final int wrap_content=0x7f0a0009;
@@ -1759,9 +1762,10 @@ containing a value of this type.
         public static final int abc_simple_dropdown_hint=0x7f030016;
         public static final int activity_main=0x7f030017;
         public static final int drop_down_list_item=0x7f030018;
-        public static final int support_simple_spinner_dropdown_item=0x7f030019;
-        public static final int system_window_decorators=0x7f03001a;
-        public static final int view_floating_layer=0x7f03001b;
+        public static final int merge_floating_layer=0x7f030019;
+        public static final int support_simple_spinner_dropdown_item=0x7f03001a;
+        public static final int system_window_decorators=0x7f03001b;
+        public static final int view_floating_layer=0x7f03001c;
     }
     public static final class string {
         /**  Content description for the action bar "home" affordance. [CHAR LIMIT=NONE] 
@@ -1831,11 +1835,19 @@ containing a value of this type.
         /** 
         Base application theme, dependent on API level. This theme is replaced
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+
+
+
+
     
 
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
+
+
+
+
         
 
         Base application theme for API 11+. This theme completely replaces
@@ -2086,6 +2098,7 @@ containing a value of this type.
         public static final int Theme_AppCompat_Light_DialogWhenLarge=0x7f0b00c0;
         public static final int Theme_AppCompat_Light_NoActionBar=0x7f0b00be;
         public static final int Theme_AppCompat_NoActionBar=0x7f0b00bd;
+        public static final int Theme_UserDialog=0x7f0b00ed;
         public static final int ThemeOverlay_AppCompat=0x7f0b00c4;
         /**  Theme overlay that replaces the normal control color, which by default is the same as the
          secondary text color, with the primary text color. 
@@ -2169,6 +2182,7 @@ containing a value of this type.
          */
         public static final int Widget_AppCompat_Toolbar=0x7f0b0034;
         public static final int Widget_AppCompat_Toolbar_Button_Navigation=0x7f0b0035;
+        public static final int testtheme=0x7f0b00ee;
     }
     public static final class styleable {
         /**  ============================================ 
