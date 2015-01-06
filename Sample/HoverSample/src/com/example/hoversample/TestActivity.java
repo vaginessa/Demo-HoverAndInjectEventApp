@@ -14,17 +14,21 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import com.example.hoversample.view.ResizableRect;
+import com.example.hoversample.view.ResizableRect.IDragger;
 
 public class TestActivity extends Activity
 {
 	private ImageView img;
-	private FrameLayout layout, vg_motion_field;
+	private FrameLayout layout;
+	private ResizableRect resizableRect;
 	// -------------------------------->
-	private boolean makeAction,mOpenAsSmallWindow = true;
+	private boolean makeAction, mOpenAsSmallWindow = true;
 	private Point point;
+
 	// -------------------------------->
 	// Activity Methods
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -35,13 +39,14 @@ public class TestActivity extends Activity
 
 		layout = (FrameLayout) findViewById(R.id.FrameLayout1);
 
-		vg_motion_field = (FrameLayout) findViewById(R.id.vg_motion_field);
+		resizableRect = (ResizableRect) findViewById(R.id.resizablerect);
 
-		setHoverListener(layout, vg_motion_field);
+		setHoverListener(layout, resizableRect);
 
-		vg_motion_field.setOnClickListener(new OnClickListener()
+		setOnTouchListener(layout, resizableRect);
+
+		resizableRect.setOnClickListener(new OnClickListener()
 		{
-
 			@Override
 			public void onClick(View v)
 			{
@@ -56,7 +61,7 @@ public class TestActivity extends Activity
 	protected void onDestroy()
 	{
 		super.onDestroy();
-		if (makeAction && point!=null)
+		if (makeAction && point != null)
 		{
 			commandTap(point);
 		}
@@ -84,13 +89,12 @@ public class TestActivity extends Activity
 	}
 
 	// -------------------------------->
-	//Methods
-	
+	// Methods
+
 	public void setHoverListener(final ViewGroup parent, View hoverView)
 	{
 		hoverView.setOnHoverListener(new OnHoverListener()
 		{
-		
 
 			@Override
 			public boolean onHover(View view, MotionEvent motionEvent)
@@ -109,11 +113,11 @@ public class TestActivity extends Activity
 						float currentY = motionEvent.getY();
 
 						currentX = getPointCoord(screenWidth,
-								vg_motion_field.getWidth(), (int) currentX);
+								resizableRect.getRectRight(), (int) currentX);
 						currentY = getPointCoord(screenHeight,
-								vg_motion_field.getHeight(), (int) currentY);
-						
-						point = new Point((int)currentX,(int)currentY);
+								resizableRect.getRectBottom(), (int) currentY);
+
+						point = new Point((int) currentX, (int) currentY);
 
 						layoutParam.leftMargin = (int) (currentX - (img
 								.getWidth() / 2));
@@ -128,7 +132,24 @@ public class TestActivity extends Activity
 
 		hoverView.setHovered(true);
 	}
-	
+
+	public void setOnTouchListener(final FrameLayout parent,
+			final ResizableRect resizableRect)
+	{
+		resizableRect.setDragger(new IDragger()
+		{
+			@Override
+			public void onDrag(int deltaX, int deltaY)
+			{
+				FrameLayout.LayoutParams layoutParam = (android.widget.FrameLayout.LayoutParams) resizableRect
+						.getLayoutParams();
+				layoutParam.leftMargin = layoutParam.leftMargin+deltaX;
+				layoutParam.topMargin = layoutParam.topMargin+deltaY;
+				parent.updateViewLayout(resizableRect, layoutParam);
+			}
+		});
+	}
+
 	public void commandTap(final Point point)
 	{
 		new Thread(new Runnable()
@@ -147,9 +168,9 @@ public class TestActivity extends Activity
 			}
 		}).start();
 	}
-	
+
 	// -------------------------------->
-	//Helpers
+	// Helpers
 
 	public int getStatusBarHeight()
 	{

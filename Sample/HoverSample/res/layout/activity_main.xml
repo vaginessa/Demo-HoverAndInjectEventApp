@@ -4,28 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <FrameLayout
-        android:id="@+id/vg_motion_field"
-        android:layout_width="300dp"
-        android:layout_height="200dp"
-        android:layout_gravity="bottom|right"
-        android:layout_margin="8dp"
-        android:background="@drawable/black_bolder"
-        android:visibility="gone" >
-
-    </FrameLayout>
+    <view
+        android:id="@+id/resizablerect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        class="com.example.hoversample.view.ResizableRect" />
 
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_launcher"
-        android:visibility="gone" />
-
-    <view
-        android:id="@+id/view1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        class="com.example.hoversample.view.DrawView" />
+        android:layout_gravity="left|top|start"
+        android:src="@drawable/ic_launcher" />
 
 </FrameLayout>
