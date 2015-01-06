@@ -22,13 +22,13 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <service android:name="com.example.hoversample.ui.FloatingStandoutLayer" >
+        <service android:name="com.example.hoversample.uiservice.FloatingStandoutLayer" >
             <intent-filter>
                 <action android:name="com.sec.android.airview.HOVER" />
             </intent-filter>
         </service>
         <service
-            android:name="com.example.hoversample.ui.FloatingOverlayService"
+            android:name="com.example.hoversample.uiservice.FloatingOverlayService"
             android:exported="true" >
             <intent-filter>
                 <action android:name="com.sec.android.airview.HOVER" />
