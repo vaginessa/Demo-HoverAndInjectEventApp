@@ -18,13 +18,16 @@ public class ResizableRect extends View
 {
 	private static final String STROKE_COLOR = "#AADB1255";
 	private static final String FILL_COLOR = "#55DB1255";
+	private static final int MAX_CLICK_DISTANCE = 15;
+	private static final int MAX_CLICK_DURATION = 200;
+	private static final int MOVE_THERSHOLD = 5;
 	private static final int TOP_LEFT = 0;
 	private static final int TOP_RIGHT = 3;
 	private static final int BOTTOM_LEFT = 1;
 	private static final int BOTTOM_RIGHT = 2;
 
 	/**
-	 * point1 and point 3 are of same group and same as point 2 and point4
+	 * point1 and point 3 are of group2 and point 2 and point4 of group1
 	 */
 	// variable to know what ball is being dragged
 	private int selectedGroupId = -1;
@@ -32,10 +35,13 @@ public class ResizableRect extends View
 	// array that holds the balls
 	private ArrayList<ColorBall> colorballs = new ArrayList<ColorBall>();
 	// ----->
+	private long startClickTime;
 	private int startX, startY;
 	private Paint paint;
 	private boolean resizing, dragging;
 	private IDragger iDragger;
+	private Rect rect;
+	private Bitmap resizeBitmap;
 
 	public ResizableRect(Context context)
 	{
@@ -58,49 +64,56 @@ public class ResizableRect extends View
 		initBalls();
 	}
 
-	
-	private static final float RATIO = 4f / 3f;
-
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
 	{
-	    int desiredWidth = getTotalWidth();
-	    int desiredHeight =  getTotalHeight();
-	 
-	    int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-	    int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-	    int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-	    int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-	 
-	    int width;
-	    int height;
-	 
-	    //Measure Width 
-	    if (widthMode == MeasureSpec.EXACTLY) {
-	        //Must be this size 
-	        width = widthSize;
-	    } else if (widthMode == MeasureSpec.AT_MOST) {
-	        //Can't be bigger than... 
-	        width = Math.min(desiredWidth, widthSize);
-	    } else { 
-	        //Be whatever you want 
-	        width = desiredWidth;
-	    } 
-	 
-	    //Measure Height 
-	    if (heightMode == MeasureSpec.EXACTLY) {
-	        //Must be this size 
-	        height = heightSize;
-	    } else if (heightMode == MeasureSpec.AT_MOST) {
-	        //Can't be bigger than... 
-	        height = Math.min(desiredHeight, heightSize);
-	    } else { 
-	        //Be whatever you want 
-	        height = desiredHeight;
-	    } 
-	 
-	    //MUST CALL THIS 
-	    setMeasuredDimension(width, height);
+		int desiredWidth = getTotalWidth();
+		int desiredHeight = getTotalHeight();
+
+		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+		int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+		int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+		int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+
+		int width;
+		int height;
+
+		// Measure Width
+		if (widthMode == MeasureSpec.EXACTLY)
+		{
+			// Must be this size
+			width = widthSize;
+		}
+		else if (widthMode == MeasureSpec.AT_MOST)
+		{
+			// Can't be bigger than...
+			width = Math.min(desiredWidth, widthSize);
+		}
+		else
+		{
+			// Be whatever you want
+			width = desiredWidth;
+		}
+
+		// Measure Height
+		if (heightMode == MeasureSpec.EXACTLY)
+		{
+			// Must be this size
+			height = heightSize;
+		}
+		else if (heightMode == MeasureSpec.AT_MOST)
+		{
+			// Can't be bigger than...
+			height = Math.min(desiredHeight, heightSize);
+		}
+		else
+		{
+			// Be whatever you want
+			height = desiredHeight;
+		}
+
+		// MUST CALL THIS
+		setMeasuredDimension(width, height);
 
 	}
 
@@ -113,6 +126,9 @@ public class ResizableRect extends View
 			return;
 		}
 
+		// canvas.translate(canvas.getWidth(),canvas.getHeight()); // reset
+		// where 0,0 is located
+
 		// Smallest x for left
 		// Smallest y for top
 		// Biggest x for right
@@ -124,7 +140,10 @@ public class ResizableRect extends View
 		int right = getRectRight() + halfBallWidth;
 		int top = getRectTop() + halfBallHeight;
 		int bottom = getRectBottom() + halfBallHeight;
-		Rect rect = new Rect(left, top, right, bottom);
+		rect.left = left;
+		rect.right = right;
+		rect.top = top;
+		rect.bottom = bottom;
 
 		paint.setAntiAlias(true);
 		paint.setDither(true);
@@ -147,27 +166,25 @@ public class ResizableRect extends View
 		paint.setColor(Color.BLUE);
 		paint.setTextSize(18);
 		paint.setStrokeWidth(0);
-		for (int i = 0; i < colorballs.size(); i++)
-		{
-			ColorBall ball = colorballs.get(i);
-			canvas.drawBitmap(ball.getBitmap(), ball.getX(), ball.getY(), paint);
-		}
-		
-		setBackgroundColor(Color.RED);
+
+		int bitmapX = getRectRight();
+		int bitmapY = getRectBottom();
+		canvas.drawBitmap(resizeBitmap, bitmapX, bitmapY, paint);
 	}
 
 	// events when touching the screen
 	public boolean onTouchEvent(MotionEvent event)
 	{
-		int eventaction = event.getAction();
-
+		int action = event.getAction();
 		int currentX = (int) event.getX();
 		int currentY = (int) event.getY();
-
-		switch (eventaction)
+		switch (action)
 		{
-		// touch down so check if the finger is on a ball
 			case MotionEvent.ACTION_DOWN:
+			{
+				// touch down so check if the finger is on a ball
+				startClickTime = System.currentTimeMillis();
+				// Start X and Y
 				startX = currentX;
 				startY = currentY;
 				if (canMove(currentX, currentY))
@@ -180,27 +197,33 @@ public class ResizableRect extends View
 					getSelectedBall(currentX, currentY);
 				}
 				break;
-
+			}
 			case MotionEvent.ACTION_MOVE: // touch drag with the ball
-
+			{
+				// Delta X and Y
 				int deltaX = currentX - startX;
 				int deltaY = currentY - startY;
-
 				if (dragging)
 				{
-						dragRect(deltaX, deltaY);
+					dragRect(deltaX, deltaY);
 				}
 				else if (resizing)
 				{
 					resizeRect(currentX, currentY);
 					refresh();
 				}
-
+				// Start X and Y
 				startX = currentX;
 				startY = currentY;
 				break;
-
+			}
 			case MotionEvent.ACTION_UP:
+				// End X and Y
+				if (isAClick(startX, startY, currentX, currentY))
+				{
+					//performClick();
+					return true;
+				}
 			case MotionEvent.ACTION_CANCEL:
 				resizing = false;
 				dragging = false;
@@ -217,6 +240,24 @@ public class ResizableRect extends View
 		}
 	}
 
+	private boolean isAClick(float x1, float y1, float x2, float y2)
+	{
+		long pressDuration = System.currentTimeMillis() - startClickTime;
+		float dx = x1 - x2;
+		float dy = y1 - y2;
+		float distanceInPx = (float) Math.sqrt(dx * dx + dy * dy);
+
+		if (pressDuration < MAX_CLICK_DURATION
+				&& pxToDp(distanceInPx) < MAX_CLICK_DISTANCE)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	public void refresh()
 	{
 		invalidate();
@@ -224,17 +265,19 @@ public class ResizableRect extends View
 	}
 
 	// ------------------------------->
-
 	// Init Balls
 	public void initBalls()
 	{
+		rect = new Rect();
+		resizeBitmap = BitmapFactory.decodeResource(getResources(),
+				R.drawable.ic_launcher);
 		initBalls(0, 0);
 	}
 
 	public void initBalls(int X, int Y)
 	{
 		// initialize rectangle.
-		int sideLength = 700;
+		int sideLength = 400;
 		Point[] points = new Point[4];
 
 		// Top Left
@@ -261,42 +304,54 @@ public class ResizableRect extends View
 		selectedGroupId = 1;
 
 		// declare each ball with the ColorBall class
-		for (Point pt : points)
-		{
-			colorballs.add(new ColorBall(getContext(), R.drawable.ic_launcher,
-					pt));
-		}
+		int icon = R.drawable.ic_launcher;
+
+		colorballs.add(new ColorBall(getContext(), icon, points[0]));
+
+		colorballs.add(new ColorBall(getContext(), icon, points[1]));
+
+		colorballs.add(new ColorBall(getContext(), icon, points[2]));
+
+		colorballs.add(new ColorBall(getContext(), icon, points[3]));
 	}
 
 	// Resize
 	public void resizeRect(int X, int Y)
 	{
 		if (colorballs.isEmpty()) return;
-
-		if (selectedBalID > -1)
+		if (selectedBalID > -1 && selectedBalID < colorballs.size())
 		{
-			// move the balls the same as the finger
-			colorballs.get(selectedBalID).setX(X);
-			colorballs.get(selectedBalID).setY(Y);
-			if (selectedGroupId == 1)
+			ColorBall selectedColorBall = colorballs.get(selectedBalID);
+
+			if (X >= pxToDp(200) && Y >= pxToDp(200)
+					&& selectedColorBall.equals(colorballs.get(BOTTOM_RIGHT)))
 			{
-				colorballs.get(BOTTOM_LEFT).setX(
-						colorballs.get(TOP_LEFT).getX());
-				colorballs.get(BOTTOM_LEFT).setY(
-						colorballs.get(BOTTOM_RIGHT).getY());
-				colorballs.get(TOP_RIGHT).setX(
-						colorballs.get(BOTTOM_RIGHT).getX());
-				colorballs.get(TOP_RIGHT).setY(colorballs.get(TOP_LEFT).getY());
-			}
-			else
-			{
-				colorballs.get(TOP_LEFT).setX(
-						colorballs.get(BOTTOM_LEFT).getX());
-				colorballs.get(TOP_LEFT).setY(colorballs.get(TOP_RIGHT).getY());
-				colorballs.get(BOTTOM_RIGHT).setX(
-						colorballs.get(TOP_RIGHT).getX());
-				colorballs.get(BOTTOM_RIGHT).setY(
-						colorballs.get(BOTTOM_LEFT).getY());
+				// move the balls the same as the finger
+				selectedColorBall.setX(X);
+				selectedColorBall.setY(Y);
+
+				if (selectedGroupId == 1)
+				{
+					colorballs.get(BOTTOM_LEFT).setX(
+							colorballs.get(TOP_LEFT).getX());
+					colorballs.get(BOTTOM_LEFT).setY(
+							colorballs.get(BOTTOM_RIGHT).getY());
+					colorballs.get(TOP_RIGHT).setX(
+							colorballs.get(BOTTOM_RIGHT).getX());
+					colorballs.get(TOP_RIGHT).setY(
+							colorballs.get(TOP_LEFT).getY());
+				}
+				else
+				{
+					colorballs.get(TOP_LEFT).setX(
+							colorballs.get(BOTTOM_LEFT).getX());
+					colorballs.get(TOP_LEFT).setY(
+							colorballs.get(TOP_RIGHT).getY());
+					colorballs.get(BOTTOM_RIGHT).setX(
+							colorballs.get(TOP_RIGHT).getX());
+					colorballs.get(BOTTOM_RIGHT).setY(
+							colorballs.get(BOTTOM_LEFT).getY());
+				}
 			}
 		}
 	}
@@ -304,10 +359,9 @@ public class ResizableRect extends View
 	// Drag
 	public void dragRect(int deltaX, int deltaY)
 	{
-		int offset = 5;
-		if (Math.abs(deltaX) > offset || Math.abs(deltaY) > offset)
+		if (Math.abs(deltaX) > MOVE_THERSHOLD
+				|| Math.abs(deltaY) > MOVE_THERSHOLD)
 		{
-			updateBalls(deltaX, deltaY);
 			if (iDragger != null)
 			{
 				iDragger.onDrag(deltaX, deltaY);
@@ -317,15 +371,6 @@ public class ResizableRect extends View
 
 	// ------------------------------->
 	// Helpers
-
-	private void updateBalls(int deltaX, int deltaY)
-	{
-		for (int i = 0; i < colorballs.size(); i++)
-		{
-			colorballs.get(i).setX(colorballs.get(i).getX() + deltaX);
-			colorballs.get(i).setY(colorballs.get(i).getY() + deltaY);
-		}
-	}
 
 	public IDragger getDragger()
 	{
@@ -344,33 +389,15 @@ public class ResizableRect extends View
 		// resize rectangle
 		selectedBalID = -1;
 		selectedGroupId = -1;
-		for (int i = colorballs.size() - 1; i >= 0; i--)
+
+		int left = getRectRight();
+		int top = getRectBottom();
+		Rect rec = new Rect(left, top, left + resizeBitmap.getWidth(), top
+				+ resizeBitmap.getHeight());
+		if (rec.contains(X, Y))
 		{
-			ColorBall ball = colorballs.get(i);
-
-			// check if inside the bounds of the ball (circle)
-			// get the center for the ball
-			int ballX = ball.getX();
-			int ballY = ball.getY();
-			int widthOfBall = ball.getWidthOfBall();
-			paint.setColor(Color.CYAN);
-
-			// Ball Rectangle
-			Rect rec = new Rect(ballX, ballY, ballX + widthOfBall, ballY
-					+ widthOfBall);
-			if (rec.contains(X, Y))
-			{
-				selectedBalID = ball.getID();
-				if (selectedBalID == 1 || selectedBalID == 3)
-				{
-					selectedGroupId = 2;
-				}
-				else
-				{
-					selectedGroupId = 1;
-				}
-				break;
-			}
+			selectedBalID = 2;
+			selectedGroupId = 1;
 		}
 	}
 
@@ -448,6 +475,11 @@ public class ResizableRect extends View
 
 	// ------------------------------->
 
+	public float pxToDp(float px)
+	{
+		return px / getResources().getDisplayMetrics().density;
+	}
+
 	public interface IDragger
 	{
 		void onDrag(int deltaX, int deltaY);
@@ -455,30 +487,45 @@ public class ResizableRect extends View
 
 	public static class ColorBall
 	{
-
-		Bitmap bitmap;
-		Context mContext;
-		Point point;
-		int id;
-		static int count = 0;
+		private int id;
+		private Bitmap bitmap;
+		private Point point;
+		private static int count = 0;
 
 		public ColorBall(Context context, int resourceId, Point point)
 		{
 			this.id = count++;
-			bitmap = BitmapFactory.decodeResource(context.getResources(),
-					resourceId);
-			mContext = context;
+			if (resourceId != -1)
+			{
+				bitmap = BitmapFactory.decodeResource(context.getResources(),
+						resourceId);
+			}
 			this.point = point;
 		}
 
 		public int getWidthOfBall()
 		{
-			return bitmap.getWidth();
+			if (bitmap != null)
+			{
+				return bitmap.getWidth();
+			}
+			else
+			{
+				return 0;
+			}
 		}
 
 		public int getHeightOfBall()
 		{
-			return bitmap.getHeight();
+			if (bitmap != null)
+			{
+				return bitmap.getHeight();
+			}
+			else
+			{
+				return 0;
+			}
+
 		}
 
 		public Bitmap getBitmap()
@@ -510,5 +557,12 @@ public class ResizableRect extends View
 		{
 			point.y = y;
 		}
+
+		@Override
+		public boolean equals(Object o)
+		{
+			return point.equals((((ColorBall) o).point));
+		}
 	}
+
 }

@@ -1,5 +1,6 @@
 package com.example.hoversample;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -61,12 +62,14 @@ public class TestActivity extends Activity
 	protected void onDestroy()
 	{
 		super.onDestroy();
-		if (makeAction && point != null)
-		{
-			commandTap(point);
-		}
+		//TODO
+//		if (makeAction && point != null)
+//		{
+//			commandTap(point);
+//		}
 	}
 
+	@SuppressLint("NewApi")
 	@Override
 	public void onAttachedToWindow()
 	{
@@ -91,15 +94,14 @@ public class TestActivity extends Activity
 	// -------------------------------->
 	// Methods
 
-	public void setHoverListener(final ViewGroup parent, View hoverView)
+	@SuppressLint("NewApi")
+	public void setHoverListener(final ViewGroup parent, final View hoverView)
 	{
 		hoverView.setOnHoverListener(new OnHoverListener()
 		{
-
 			@Override
 			public boolean onHover(View view, MotionEvent motionEvent)
 			{
-
 				FrameLayout.LayoutParams layoutParam = (android.widget.FrameLayout.LayoutParams) img
 						.getLayoutParams();
 
@@ -112,10 +114,13 @@ public class TestActivity extends Activity
 						float currentX = motionEvent.getX();
 						float currentY = motionEvent.getY();
 
+						int rectWidth = resizableRect.getWidth();
+						int rectheight = resizableRect.getHeight();
+						
 						currentX = getPointCoord(screenWidth,
-								resizableRect.getRectRight(), (int) currentX);
+								rectWidth, (int) currentX);
 						currentY = getPointCoord(screenHeight,
-								resizableRect.getRectBottom(), (int) currentY);
+								rectheight, (int) currentY);
 
 						point = new Point((int) currentX, (int) currentY);
 
